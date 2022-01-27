@@ -1,1 +1,1 @@
-//export * from "./seo/";
+export * from "./classes/RichText";
