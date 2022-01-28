@@ -70,17 +70,21 @@ export class RichText {
               if (nodeType.match(/^embedded/)) {
                 r = _refs[refCount];
                 refCount++;
-              } else if (nodeType.match(/paragraph/)) {
+              } else if (nodeType.match(/paragraph|heading/)) {
                 j.content.map((pCon) => {
                   const nodeType = pCon.nodeType;
-                  if (nodeType.match(/^entry/)) {
+                  if (nodeType.match(/^entry|asset/)) {
                     r = _refs[refCount];
                     refCount++;
                     pCon.references = r;
                   }
                 });
               } else {
-                console.log(nodeType);
+                console.log(
+                  "The node: " +
+                    nodeType +
+                    " is not yet supported in the RichText class."
+                );
               }
               return { ...j, references: r };
             }
