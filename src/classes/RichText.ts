@@ -93,8 +93,10 @@ export class RichText {
       : null;
     this.references = _refs;
   }
-  excerpt = (chars: number = 156, _content: RichText): string => {
-    const content: RichTextJsonContent[] = _content?.json?.content;
+  excerpt = (chars: number = 156, _content?: RichText): string => {
+    const content: RichTextJsonContent[] = _content
+      ? _content?.json?.content
+      : this.json.content;
     let ret = ``;
     if (Array.isArray(content)) {
       content.forEach((text) => {
