@@ -93,10 +93,8 @@ export class RichText {
       : null;
     this.references = _refs;
   }
-  excerpt = (chars: number = 156, _content?: RichText): string => {
-    const content: RichTextJsonContent[] = _content
-      ? _content?.json?.content
-      : this.json.content;
+  excerpt = (chars: number = 156): string => {
+    const content = this.json.content;
     let ret = ``;
     if (Array.isArray(content)) {
       content.forEach((text) => {
@@ -115,6 +113,6 @@ export class RichText {
         }
       });
     }
-    return ret.slice(0, chars) + "...";
+    return ret.length > chars ? ret.slice(0, chars) + "..." : ret;
   };
 }
