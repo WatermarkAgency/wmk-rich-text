@@ -35,10 +35,9 @@ export interface RichTextJsonContent {
 export class RichText {
   /**
    *
-   * @param {Object} node - a Contentful RichText node
    */
   raw: string;
-  json: {
+  json?: {
     nodeType: string;
     data: object;
     content: RichTextJsonContent[];
@@ -90,7 +89,7 @@ export class RichText {
             }
           )
         }
-      : null;
+      : undefined;
     this.references = _refs;
   }
   excerpt = (chars: number = 156): string => {
