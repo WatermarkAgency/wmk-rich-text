@@ -1,7 +1,17 @@
-import { Block, Document, Inline, Text } from "@contentful/rich-text-types";
+import {
+  Block,
+  Document,
+  Inline,
+  Text,
+  TopLevelBlock
+} from "@contentful/rich-text-types";
+
+export interface RichTextTopLeveBlock extends TopLevelBlock {
+  references: any[];
+}
 
 export interface RichTextDocument extends Document {
-  references: any[];
+  content: RichTextTopLeveBlock[];
 }
 
 export interface RichTextQuery {
@@ -91,7 +101,8 @@ export class RichText {
               if (line.nodeType === "text") {
                 ret = ret + line.value;
               } else {
-                ret = ret + line.content[0].value;
+                console.log("error: this should not happen:", line.content);
+                //ret = ret + line.content[0].value;
               }
             });
           }
