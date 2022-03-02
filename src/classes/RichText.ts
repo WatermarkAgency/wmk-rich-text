@@ -57,26 +57,65 @@ export class RichText {
           content: json.content.map((j) => {
             const { nodeType } = j;
             let r = null;
-            if (nodeType.match(/^embedded/)) {
-              r = _refs[refCount];
-              refCount++;
-            } else if (nodeType.match(/paragraph|heading/)) {
-              j.content.map(
-                (pCon: RichTextBlock | RichTextInline | RichTextText) => {
-                  const nodeType = pCon.nodeType;
-                  if (nodeType.match(/^entry|asset/)) {
-                    r = _refs[refCount];
-                    refCount++;
-                    pCon.references = r;
+            switch (true) {
+              case Array.isArray(nodeType.match(/^embedded/)):
+                r = _refs[refCount];
+                refCount++;
+                break;
+              case Array.isArray(nodeType.match(/paragraph|heading/)):
+                j.content.forEach(
+                  (pCon: RichTextBlock | RichTextInline | RichTextText) => {
+                    const nodeType = pCon.nodeType;
+                    if (nodeType.match(/^entry|asset/)) {
+                      r = _refs[refCount];
+                      refCount++;
+                      pCon.references = r;
+                    }
                   }
-                }
-              );
-            } else {
-              console.log(
-                "The node: " +
-                  nodeType +
-                  " is not yet supported in the RichText class."
-              );
+                );
+                break;
+              case Array.isArray(nodeType.match(/list/)):
+                j.content.forEach((lCon: TopLevelBlock) => {
+                  const listCon = Array.isArray(lCon.content)
+                    ? lCon.content
+                    : [];
+                  listCon.forEach(
+                    (pCon: RichTextBlock | RichTextInline | RichTextText) => {
+                      const nodeType = pCon.nodeType;
+                      if (nodeType.match(/^entry|asset/)) {
+                        r = _refs[refCount];
+                        refCount++;
+                        pCon.references = r;
+                      }
+                    }
+                  );
+                });
+                break;
+              case Array.isArray(nodeType.match(/quote/)):
+                j.content.forEach((bCon: TopLevelBlock) => {
+                  const blockQuote = Array.isArray(bCon.content)
+                    ? bCon.content
+                    : [];
+                  blockQuote.forEach(
+                    (pCon: RichTextBlock | RichTextInline | RichTextText) => {
+                      const nodeType = pCon.nodeType;
+                      if (nodeType.match(/^entry|asset/)) {
+                        r = _refs[refCount];
+                        refCount++;
+                        pCon.references = r;
+                      }
+                    }
+                  );
+                });
+                break;
+              case Array.isArray(nodeType.match(/hr/)):
+                break;
+              default:
+                console.log(
+                  "The node: " +
+                    nodeType +
+                    " is not yet supported in the RichText class."
+                );
             }
             return { ...j, references: r };
           })
