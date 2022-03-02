@@ -60,38 +60,23 @@ export class RichText {
       ? node.references
       : [];
     const raw = node?.raw;
-    const json: Document = JSON.parse(raw);
+    const json: Document = raw ? JSON.parse(raw) : undefined;
     let refCount = 0;
     this.raw = raw;
-    this.json = Array.isArray(json.content)
-      ? {
-          ...json,
-          content: json.content.map((j) => {
-            const { nodeType } = j;
-            let r = null;
-            switch (true) {
-              case Array.isArray(nodeType.match(/^embedded/)):
-                r = _refs[refCount];
-                refCount++;
-                break;
-              case Array.isArray(nodeType.match(/paragraph|heading/)):
-                j.content.forEach(
-                  (pCon: RichTextBlock | RichTextInline | RichTextText) => {
-                    const nodeType = pCon.nodeType;
-                    if (nodeType.match(/^entry|asset/)) {
-                      r = _refs[refCount];
-                      refCount++;
-                      pCon.reference = r;
-                    }
-                  }
-                );
-                break;
-              case Array.isArray(nodeType.match(/list/)):
-                j.content.forEach((lCon: TopLevelBlock) => {
-                  const listCon = Array.isArray(lCon.content)
-                    ? lCon.content
-                    : [];
-                  listCon.forEach(
+    this.json =
+      json && Array.isArray(json.content)
+        ? {
+            ...json,
+            content: json.content.map((j) => {
+              const { nodeType } = j;
+              let r = null;
+              switch (true) {
+                case Array.isArray(nodeType.match(/^embedded/)):
+                  r = _refs[refCount];
+                  refCount++;
+                  break;
+                case Array.isArray(nodeType.match(/paragraph|heading/)):
+                  j.content.forEach(
                     (pCon: RichTextBlock | RichTextInline | RichTextText) => {
                       const nodeType = pCon.nodeType;
                       if (nodeType.match(/^entry|asset/)) {
@@ -101,42 +86,58 @@ export class RichText {
                       }
                     }
                   );
-                });
-                break;
-              case Array.isArray(nodeType.match(/quote/)):
-                j.content.forEach((bCon: TopLevelBlock) => {
-                  const blockQuote = Array.isArray(bCon.content)
-                    ? bCon.content
-                    : [];
-                  blockQuote.forEach(
-                    (pCon: RichTextBlock | RichTextInline | RichTextText) => {
-                      const nodeType = pCon.nodeType;
-                      if (nodeType.match(/^entry|asset/)) {
-                        r = _refs[refCount];
-                        refCount++;
-                        pCon.reference = r;
+                  break;
+                case Array.isArray(nodeType.match(/list/)):
+                  j.content.forEach((lCon: TopLevelBlock) => {
+                    const listCon = Array.isArray(lCon.content)
+                      ? lCon.content
+                      : [];
+                    listCon.forEach(
+                      (pCon: RichTextBlock | RichTextInline | RichTextText) => {
+                        const nodeType = pCon.nodeType;
+                        if (nodeType.match(/^entry|asset/)) {
+                          r = _refs[refCount];
+                          refCount++;
+                          pCon.reference = r;
+                        }
                       }
-                    }
+                    );
+                  });
+                  break;
+                case Array.isArray(nodeType.match(/quote/)):
+                  j.content.forEach((bCon: TopLevelBlock) => {
+                    const blockQuote = Array.isArray(bCon.content)
+                      ? bCon.content
+                      : [];
+                    blockQuote.forEach(
+                      (pCon: RichTextBlock | RichTextInline | RichTextText) => {
+                        const nodeType = pCon.nodeType;
+                        if (nodeType.match(/^entry|asset/)) {
+                          r = _refs[refCount];
+                          refCount++;
+                          pCon.reference = r;
+                        }
+                      }
+                    );
+                  });
+                  break;
+                case Array.isArray(nodeType.match(/hr/)):
+                  break;
+                default:
+                  console.log(
+                    "The node: " +
+                      nodeType +
+                      " is not yet supported in the RichText class."
                   );
-                });
-                break;
-              case Array.isArray(nodeType.match(/hr/)):
-                break;
-              default:
-                console.log(
-                  "The node: " +
-                    nodeType +
-                    " is not yet supported in the RichText class."
-                );
-            }
-            const __typename = r?.__typename;
-            if (r && "__typename" in r) {
-              delete r["__typename"];
-            }
-            return { ...j, reference: { __typename, data: { ...r } } };
-          })
-        }
-      : undefined;
+              }
+              const __typename = r?.__typename;
+              if (r && "__typename" in r) {
+                delete r["__typename"];
+              }
+              return { ...j, reference: { __typename, data: { ...r } } };
+            })
+          }
+        : undefined;
     this.references = _refs;
   }
   excerpt = (chars: number = 156): string => {
