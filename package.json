@@ -1,6 +1,6 @@
 {
   "name": "wmk-rich-text",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "WMK RichText Component on Typescript",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -14,6 +14,7 @@
   "license": "ISC",
   "devDependencies": {
     "@contentful/rich-text-react-renderer": "^15.11.1",
+    "@contentful/rich-text-types": "^15.11.1",
     "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-node-resolve": "^13.1.3",
     "@rollup/plugin-typescript": "^8.3.0",
