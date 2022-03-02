@@ -6,13 +6,18 @@ import {
   TopLevelBlock
 } from "@contentful/rich-text-types";
 
-export interface RichTextReference {
+export interface RichTextReferenceQuery {
   __typename: string;
   [key: string]: any;
 }
 
+export interface RichTextReference {
+  __typename: string;
+  data: { [key: string]: any };
+}
+
 export interface RichTextTopLeveBlock extends TopLevelBlock {
-  references: RichTextReference;
+  reference: RichTextReference;
 }
 
 export interface RichTextDocument extends Document {
@@ -21,19 +26,19 @@ export interface RichTextDocument extends Document {
 
 export interface RichTextQuery {
   raw?: string;
-  references?: RichTextReference[];
+  references?: RichTextReferenceQuery[];
 }
 
 export interface RichTextBlock extends Block {
-  references: RichTextReference;
+  reference: RichTextReferenceQuery;
 }
 
 export interface RichTextInline extends Inline {
-  references: RichTextReference;
+  reference: RichTextReferenceQuery;
 }
 
 export interface RichTextText extends Text {
-  references: RichTextReference;
+  reference: RichTextReferenceQuery;
 }
 
 /**
@@ -51,7 +56,9 @@ export class RichText {
   references: any[];
 
   constructor(node: RichTextQuery) {
-    const _refs = node.references ? node.references : [];
+    const _refs: RichTextReferenceQuery[] = node.references
+      ? node.references
+      : [];
     const raw = node.raw;
     const json: Document = JSON.parse(raw);
     let refCount = 0;
@@ -74,7 +81,7 @@ export class RichText {
                     if (nodeType.match(/^entry|asset/)) {
                       r = _refs[refCount];
                       refCount++;
-                      pCon.references = r;
+                      pCon.reference = r;
                     }
                   }
                 );
@@ -90,7 +97,7 @@ export class RichText {
                       if (nodeType.match(/^entry|asset/)) {
                         r = _refs[refCount];
                         refCount++;
-                        pCon.references = r;
+                        pCon.reference = r;
                       }
                     }
                   );
@@ -107,7 +114,7 @@ export class RichText {
                       if (nodeType.match(/^entry|asset/)) {
                         r = _refs[refCount];
                         refCount++;
-                        pCon.references = r;
+                        pCon.reference = r;
                       }
                     }
                   );
@@ -122,7 +129,11 @@ export class RichText {
                     " is not yet supported in the RichText class."
                 );
             }
-            return { ...j, references: r };
+            const __typename = r?.__typename;
+            if (r && "__typename" in r) {
+              delete r["__typename"];
+            }
+            return { ...j, reference: { __typename, data: { ...r } } };
           })
         }
       : undefined;
