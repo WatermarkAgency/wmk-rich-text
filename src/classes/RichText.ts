@@ -56,10 +56,10 @@ export class RichText {
   references: any[];
 
   constructor(node: RichTextQuery) {
-    const _refs: RichTextReferenceQuery[] = node.references
+    const _refs: RichTextReferenceQuery[] = node?.references
       ? node.references
       : [];
-    const raw = node.raw;
+    const raw = node?.raw;
     const json: Document = JSON.parse(raw);
     let refCount = 0;
     this.raw = raw;
