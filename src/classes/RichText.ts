@@ -6,8 +6,13 @@ import {
   TopLevelBlock
 } from "@contentful/rich-text-types";
 
+export interface RichTextReference {
+  __typename: string;
+  [key: string]: any;
+}
+
 export interface RichTextTopLeveBlock extends TopLevelBlock {
-  references: any[];
+  references: RichTextReference;
 }
 
 export interface RichTextDocument extends Document {
@@ -15,20 +20,20 @@ export interface RichTextDocument extends Document {
 }
 
 export interface RichTextQuery {
-  raw: string;
-  references: any[];
+  raw?: string;
+  references?: RichTextReference[];
 }
 
 export interface RichTextBlock extends Block {
-  references: object;
+  references: RichTextReference;
 }
 
 export interface RichTextInline extends Inline {
-  references: object;
+  references: RichTextReference;
 }
 
 export interface RichTextText extends Text {
-  references: object;
+  references: RichTextReference;
 }
 
 /**
