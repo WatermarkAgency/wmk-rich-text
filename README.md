@@ -43,14 +43,16 @@ The content prop must be instantiated RichText, and the options prop is now requ
 
 ### EmbeddedBlock
 
-```js
-    [BLOCKS.EMBEDDED_ENTRY]: (node) => {
+```tsx
+    [BLOCKS.EMBEDDED_ENTRY]: (node: RichTextTopLevelBlock) => {
       const entry = new EmbeddedBlock(node, CompHash);
       return entry.render();
     }
 ```
 
 Intended to be used within richTextOptions on the [BLOCKS.EMBEDDED_ENTRY] key, this component will help associate custom JSX with queried embedded blocks in Contentful Rich Text data.
+
+Node will be of type RichTextTopLevelBlock, which is an extension of Contentful's TopLevelBlock interface that also includes reference data. NOTE: since there is only one reference per block, the property name has been changed to reflect that: *reference* instead of references.
 
 Pass the queried node along with a Component hash object. The hash object must have keys that correspond to each block's _\_\_typename_.
 
