@@ -1,4 +1,4 @@
-## wmk-rich=text
+## wmk-rich-text
 
 ### RichText class
 
@@ -62,7 +62,7 @@ If the associated component needs to pre-process the given reference props, the 
 
 ```tsx
 const CompHash = {
-  ContentfulLink: LinkComponent,
+  ContentfulLink: LinkBlockComponent,
   ContentfulBlog: ({
     image,
     title,
@@ -71,6 +71,6 @@ const CompHash = {
     image: ContentfulImageQuery;
     title: string;
     path: string;
-  }) => <ContentfulBlog image={new Img(image)} title={title} path={path} />
+  }) => <BlogBlockComponent image={new Img(image)} title={title} path={path} />
 };
 ```
