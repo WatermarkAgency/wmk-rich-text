@@ -1,29 +1,44 @@
-import get from "lodash/get";
+import {
+  Block,
+  Document,
+  Inline,
+  Text,
+  TopLevelBlock
+} from "@contentful/rich-text-types";
 
-export interface RichTextJsonContent {
-  content: {
-    data: {};
-    marks: [];
-    nodeType: string;
-    value: string;
-    content?: {
-      data: {};
-      marks: [];
-      nodeType: string;
-      value: string;
-      content?: {
-        data: {};
-        marks: [];
-        nodeType: string;
-        value: string;
-        content?: [];
-        references?: {};
-      }[];
-    }[];
-  }[];
-  data: {};
-  nodeType: string;
-  references: [];
+export interface RichTextReferenceQuery {
+  __typename: string;
+  [key: string]: any;
+}
+
+export interface RichTextReference {
+  __typename: string;
+  data: { [key: string]: any };
+}
+
+export interface RichTextTopLeveBlock extends TopLevelBlock {
+  reference: RichTextReference;
+}
+
+export interface RichTextDocument extends Document {
+  content: RichTextTopLeveBlock[];
+}
+
+export interface RichTextQuery {
+  raw?: string;
+  references?: RichTextReferenceQuery[];
+}
+
+export interface RichTextBlock extends Block {
+  reference: RichTextReferenceQuery;
+}
+
+export interface RichTextInline extends Inline {
+  reference: RichTextReferenceQuery;
+}
+
+export interface RichTextText extends Text {
+  reference: RichTextReferenceQuery;
 }
 
 /**
@@ -35,84 +50,121 @@ export interface RichTextJsonContent {
 export class RichText {
   /**
    *
-   * @param {Object} node - a Contentful RichText node
    */
   raw: string;
-  json: {
-    nodeType: string;
-    data: object;
-    content: RichTextJsonContent[];
-  };
-  references: [];
+  json?: RichTextDocument;
+  references: any[];
 
-  constructor(node: object) {
-    const _refs = get(node, `references`, []);
-    const raw = get(node, `raw`);
-    const json = raw ? JSON.parse(raw) : get(node, `json`);
+  constructor(node: RichTextQuery) {
+    const _refs: RichTextReferenceQuery[] = node?.references
+      ? node.references
+      : [];
+    const raw = node?.raw;
+    const json: Document = raw ? JSON.parse(raw) : undefined;
     let refCount = 0;
-    this.raw = get(node, `raw`);
-    this.json = Array.isArray(get(json, `content`))
-      ? {
-          ...json,
-          content: json.content.map(
-            (j: {
-              nodeType: string;
-              data: object;
-              content?: {
-                nodeType: string;
-                data: object;
-                references: {};
-                content: [];
-              }[];
-            }) => {
+    this.raw = raw;
+    this.json =
+      json && Array.isArray(json.content)
+        ? {
+            ...json,
+            content: json.content.map((j) => {
               const { nodeType } = j;
               let r = null;
-              if (nodeType.match(/^embedded/)) {
-                r = _refs[refCount];
-                refCount++;
-              } else if (nodeType.match(/paragraph|heading/)) {
-                j.content.map((pCon) => {
-                  const nodeType = pCon.nodeType;
-                  if (nodeType.match(/^entry|asset/)) {
-                    r = _refs[refCount];
-                    refCount++;
-                    pCon.references = r;
-                  }
-                });
-              } else {
-                console.log(
-                  "The node: " +
-                    nodeType +
-                    " is not yet supported in the RichText class."
-                );
+              switch (true) {
+                case Array.isArray(nodeType.match(/^embedded/)):
+                  r = _refs[refCount];
+                  refCount++;
+                  break;
+                case Array.isArray(nodeType.match(/paragraph|heading/)):
+                  j.content.forEach(
+                    (pCon: RichTextBlock | RichTextInline | RichTextText) => {
+                      const nodeType = pCon.nodeType;
+                      if (nodeType.match(/^entry|asset/)) {
+                        r = _refs[refCount];
+                        refCount++;
+                        pCon.reference = r;
+                      }
+                    }
+                  );
+                  break;
+                case Array.isArray(nodeType.match(/list/)):
+                  j.content.forEach((lCon: TopLevelBlock) => {
+                    const listCon = Array.isArray(lCon.content)
+                      ? lCon.content
+                      : [];
+                    listCon.forEach(
+                      (pCon: RichTextBlock | RichTextInline | RichTextText) => {
+                        const nodeType = pCon.nodeType;
+                        if (nodeType.match(/^entry|asset/)) {
+                          r = _refs[refCount];
+                          refCount++;
+                          pCon.reference = r;
+                        }
+                      }
+                    );
+                  });
+                  break;
+                case Array.isArray(nodeType.match(/quote/)):
+                  j.content.forEach((bCon: TopLevelBlock) => {
+                    const blockQuote = Array.isArray(bCon.content)
+                      ? bCon.content
+                      : [];
+                    blockQuote.forEach(
+                      (pCon: RichTextBlock | RichTextInline | RichTextText) => {
+                        const nodeType = pCon.nodeType;
+                        if (nodeType.match(/^entry|asset/)) {
+                          r = _refs[refCount];
+                          refCount++;
+                          pCon.reference = r;
+                        }
+                      }
+                    );
+                  });
+                  break;
+                case Array.isArray(nodeType.match(/hr/)):
+                  break;
+                default:
+                  console.log(
+                    "The node: " +
+                      nodeType +
+                      " is not yet supported in the RichText class."
+                  );
               }
-              return { ...j, references: r };
-            }
-          )
-        }
-      : null;
+              const __typename = r?.__typename;
+              if (r && "__typename" in r) {
+                delete r["__typename"];
+              }
+              return { ...j, reference: { __typename, data: { ...r } } };
+            })
+          }
+        : undefined;
     this.references = _refs;
   }
-  excerpt = (chars: number = 156, _content: RichText): string => {
-    const content: RichTextJsonContent[] = _content?.json?.content;
+  excerpt = (chars: number = 156): string => {
+    const content = this.json.content;
     let ret = ``;
     if (Array.isArray(content)) {
       content.forEach((text) => {
         const type = text.nodeType;
         if (type === "paragraph") {
-          const innerContent = text.content;
+          const innerContent = text.content as (
+            | RichTextBlock
+            | RichTextInline
+            | RichTextText
+          )[];
           if (Array.isArray(innerContent)) {
             innerContent.forEach((line) => {
               if (line.nodeType === "text") {
                 ret = ret + line.value;
               } else {
-                ret = ret + line.content[0].value;
+                console.log("error: this should not happen:", line.content);
+                //ret = ret + line.content[0].value;
               }
             });
           }
         }
       });
     }
-    return ret.slice(0, chars) + "...";
+    return ret.length > chars ? ret.slice(0, chars) + "..." : ret;
   };
 }
