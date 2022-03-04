@@ -12,6 +12,7 @@ new RichText(node: RichTextQuery)
 
 #### Sample GraphQL RichText Query
 
+
 ```js
 const sampleQuery = graphql`
   {
@@ -20,9 +21,22 @@ const sampleQuery = graphql`
         raw
         references {
           __typename
-          ... on contentfulLink {
+          ... on ContentfulLink {
             title
             url
+          }
+          ... on ContentfulBlog {
+            image {
+              gatsbyImageData
+              title
+              file {
+                url
+                contentType
+              }
+              description
+            }
+            path
+            title
           }
         }
       }

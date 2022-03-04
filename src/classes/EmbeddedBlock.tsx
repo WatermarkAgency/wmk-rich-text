@@ -1,5 +1,5 @@
 import React from "react";
-import { RichTextTopLeveBlock } from "..";
+import { RichTextTopLevelBlock } from "..";
 
 const NullComponent = () => <></>;
 
@@ -11,7 +11,7 @@ export class EmbeddedBlock {
   props: { [key: string]: any };
   Comp: React.FunctionComponent<any>;
   hash: ComponentHashTable;
-  constructor(node: RichTextTopLeveBlock, hash: ComponentHashTable) {
+  constructor(node: RichTextTopLevelBlock, hash: ComponentHashTable) {
     const data = node?.reference;
     const type = data?.__typename;
     const props = data?.data;
@@ -37,3 +37,4 @@ export class EmbeddedBlock {
     this.Comp = Comp ? Comp : NullComponent;
   }
 }
+

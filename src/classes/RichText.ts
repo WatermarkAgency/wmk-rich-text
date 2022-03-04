@@ -16,12 +16,12 @@ export interface RichTextReference {
   data: { [key: string]: any };
 }
 
-export interface RichTextTopLeveBlock extends TopLevelBlock {
+export interface RichTextTopLevelBlock extends TopLevelBlock {
   reference: RichTextReference;
 }
 
 export interface RichTextDocument extends Document {
-  content: RichTextTopLeveBlock[];
+  content: RichTextTopLevelBlock[];
 }
 
 export interface RichTextQuery {

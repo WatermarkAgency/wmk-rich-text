@@ -2,6 +2,12 @@
 
 Notable changes to this project will be documented in this file.
 
+### [2.1.9] (2022-03-04)
+
+#### Bug Fixes
+
+- Customized RichTextReact options prop typing
+
 ### [2.1.6] (2022-03-03)
 
 #### Features
