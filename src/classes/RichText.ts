@@ -143,7 +143,7 @@ export class RichText {
   excerpt = (chars: number = 156): string => {
     const content = this.json.content;
     let ret = ``;
-    if (Array.isArray(content)) {
+    if (Array.isArray(content) && ret.length < chars) {
       content.forEach((text) => {
         const type = text.nodeType;
         if (type === "paragraph") {
