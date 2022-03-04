@@ -2,11 +2,15 @@
 
 Notable changes to this project will be documented in this file.
 
-### [2.1.18] (2022-03-04)
+### [2.2.0] (2022-03-04)
 
 #### Bug Fixes
 
 - Customized RichTextReact options prop typing
+
+#### Features
+
+- RichTextNode type has replaced usage of RichTextTopLevelBlock as renderNode's node definition.
 
 ### [2.1.6] (2022-03-03)
 
@@ -18,7 +22,6 @@ Notable changes to this project will be documented in this file.
 #### Bug Fixes
 
 - Type checking RichText inputs
-
 
 #### Chores
 
