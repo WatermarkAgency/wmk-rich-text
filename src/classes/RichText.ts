@@ -143,7 +143,7 @@ export class RichText {
   excerpt = (chars: number = 156): string => {
     const content = this.json.content;
     let ret = ``;
-    if (Array.isArray(content) && ret.length < chars) {
+    if (Array.isArray(content)) {
       content.forEach((text) => {
         const type = text.nodeType;
         if (type === "paragraph") {
@@ -153,14 +153,19 @@ export class RichText {
             | RichTextText
           )[];
           if (Array.isArray(innerContent)) {
-            innerContent.forEach((line) => {
-              if (line.nodeType === "text") {
-                ret = ret + line.value;
-              } else {
-                console.log("error: this should not happen:", line.content);
-                //ret = ret + line.content[0].value;
-              }
-            });
+            let count = 1;
+            while (ret.length < chars && count < innerContent.length) {
+              innerContent.forEach((line) => {
+                if (line.nodeType === "text") {
+                  ret = ret + line.value;
+                  count++;
+                } else {
+                  console.log("error: this should not happen:", line.content);
+                  count++;
+                  //ret = ret + line.content[0].value;
+                }
+              });
+            }
           }
         }
       });

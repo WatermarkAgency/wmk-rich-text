@@ -2,6 +2,12 @@
 
 Notable changes to this project will be documented in this file.
 
+### [2.2.3] (2022-03-04)
+
+#### Bug Fixes
+
+- Noticed major performance issue in excerpt() method. Stopgap measure stops looping through rich text once character limit reached.
+
 ### [2.2.0] (2022-03-04)
 
 #### Bug Fixes
