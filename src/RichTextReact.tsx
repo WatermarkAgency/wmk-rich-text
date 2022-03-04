@@ -3,23 +3,28 @@ import {
   NodeRenderer,
   Options
 } from "@contentful/rich-text-react-renderer";
-import { AssetHyperlink, EntryHyperlink } from "@contentful/rich-text-types";
+import {
+  AssetHyperlink,
+  Block,
+  EntryHyperlink,
+  Inline
+} from "@contentful/rich-text-types";
 import * as React from "react";
 import { RichText, RichTextDocument } from ".";
 import { RichTextReference } from ".";
 import { RichTextBlock, RichTextInline } from "./classes/RichText";
 
 export interface RichTextAssetHyperlink extends AssetHyperlink {
-  reference: RichTextReference;
+  reference?: RichTextReference;
 }
 
 export interface RichTextEntryHyperlink extends EntryHyperlink {
-  reference: RichTextReference;
+  reference?: RichTextReference;
 }
 
 export interface RichTextNodeRenderer extends NodeRenderer {
   (
-    node: RichTextBlock | RichTextInline,
+    node: RichTextBlock | RichTextInline | Block | Inline,
     children: React.ReactNode
   ): React.ReactNode;
 }

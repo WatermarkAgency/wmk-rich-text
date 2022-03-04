@@ -17,7 +17,7 @@ export interface RichTextReference {
 }
 
 export interface RichTextTopLevelBlock extends TopLevelBlock {
-  reference: RichTextReference;
+  reference?: RichTextReference;
 }
 
 export interface RichTextDocument extends Document {
@@ -30,15 +30,15 @@ export interface RichTextQuery {
 }
 
 export interface RichTextBlock extends Block {
-  reference: RichTextReferenceQuery;
+  reference?: RichTextReferenceQuery;
 }
 
 export interface RichTextInline extends Inline {
-  reference: RichTextReferenceQuery;
+  reference?: RichTextReferenceQuery;
 }
 
 export interface RichTextText extends Text {
-  reference: RichTextReferenceQuery;
+  reference?: RichTextReferenceQuery;
 }
 
 /**
