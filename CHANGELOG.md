@@ -2,6 +2,13 @@
 
 Notable changes to this project will be documented in this file.
 
+### [2.2.7] (2022-03-08)
+
+#### Bug Fixes
+
+- Preserve \_\_typename key to prevent disappearing content bug
+- Allow for RichTextReact to consume content that is "undefined"
+
 ### [2.2.3] (2022-03-04)
 
 #### Bug Fixes

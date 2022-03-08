@@ -131,9 +131,6 @@ export class RichText {
                   );
               }
               const __typename = r?.__typename;
-              if (r && "__typename" in r) {
-                delete r["__typename"];
-              }
               return { ...j, reference: { __typename, data: { ...r } } };
             })
           }

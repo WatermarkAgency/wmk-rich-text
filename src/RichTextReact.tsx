@@ -43,9 +43,13 @@ export const RichTextReact = ({
   content,
   options
 }: {
-  content: RichText;
+  content?: RichText;
   options: RichTextOptions;
 }) => {
-  const { json }: { json?: RichTextDocument } = { ...content };
-  return json ? <>{documentToReactComponents(json, options)}</> : <></>;
+  if (content) {
+    const { json }: { json?: RichTextDocument } = content;
+    return json ? <>{documentToReactComponents(json, options)}</> : <></>;
+  } else {
+    return <></>;
+  }
 };
