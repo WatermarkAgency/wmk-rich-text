@@ -131,7 +131,11 @@ export class RichText {
                   );
               }
               const __typename = r?.__typename;
-              return { ...j, reference: { __typename, data: { ...r } } };
+              const retCopy = { ...r };
+              if (retCopy && "__typename" in retCopy) {
+                delete retCopy["__typename"];
+              }
+              return { ...j, reference: { __typename, data: { ...retCopy } } };
             })
           }
         : undefined;

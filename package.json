@@ -1,6 +1,6 @@
 {
   "name": "wmk-rich-text",
-  "version": "2.2.7",
+  "version": "2.2.8",
   "description": "WMK RichText Component on Typescript",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
