@@ -7,12 +7,12 @@ import {
 } from "@contentful/rich-text-types";
 
 export interface RichTextReferenceQuery {
-  __typename: string;
+  __typename?: string;
   [key: string]: any;
 }
 
 export interface RichTextReference {
-  __typename: string;
+  __typename?: string;
   data: { [key: string]: any };
 }
 
@@ -51,7 +51,7 @@ export class RichText {
   /**
    *
    */
-  raw: string;
+  raw?: string;
   json?: RichTextDocument;
   references: any[];
 
@@ -88,10 +88,11 @@ export class RichText {
                   );
                   break;
                 case Array.isArray(nodeType.match(/list/)):
-                  j.content.forEach((lCon: TopLevelBlock) => {
-                    const listCon = Array.isArray(lCon.content)
-                      ? lCon.content
-                      : [];
+                  j.content.forEach((lCon: Block | Inline | Text) => {
+                    const listCon =
+                      "content" in lCon && Array.isArray(lCon.content)
+                        ? lCon.content
+                        : [];
                     listCon.forEach(
                       (pCon: RichTextBlock | RichTextInline | RichTextText) => {
                         const nodeType = pCon.nodeType;
@@ -105,10 +106,11 @@ export class RichText {
                   });
                   break;
                 case Array.isArray(nodeType.match(/quote/)):
-                  j.content.forEach((bCon: TopLevelBlock) => {
-                    const blockQuote = Array.isArray(bCon.content)
-                      ? bCon.content
-                      : [];
+                  j.content.forEach((bCon: Block | Inline | Text) => {
+                    const blockQuote =
+                      "content" in bCon && Array.isArray(bCon.content)
+                        ? bCon.content
+                        : [];
                     blockQuote.forEach(
                       (pCon: RichTextBlock | RichTextInline | RichTextText) => {
                         const nodeType = pCon.nodeType;
@@ -142,7 +144,7 @@ export class RichText {
     this.references = _refs;
   }
   excerpt = (chars: number = 156): string => {
-    const content = this.json.content;
+    const content = this.json?.content;
     let ret = ``;
     if (Array.isArray(content)) {
       content.forEach((text) => {
@@ -161,9 +163,9 @@ export class RichText {
                   ret = ret + line.value;
                   count++;
                 } else {
-                  console.log("error: this should not happen:", line.content);
+                  ret =
+                    "value" in line.content[0] ? line.content[0]?.value : "";
                   count++;
-                  //ret = ret + line.content[0].value;
                 }
               });
             }
