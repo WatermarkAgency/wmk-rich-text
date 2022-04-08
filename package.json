@@ -1,6 +1,6 @@
 {
   "name": "wmk-rich-text",
-  "version": "2.2.9",
+  "version": "2.3.0",
   "description": "WMK RichText Component on Typescript",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -32,6 +32,6 @@
   },
   "peerDependencies": {
     "gatsby": "^4.2.0",
-    "react": "^17.0.2"
+    "react": "^17.0.2 || ^18.0.0"
   }
 }
