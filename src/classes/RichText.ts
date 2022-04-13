@@ -164,7 +164,11 @@ export class RichText {
                   count++;
                 } else {
                   ret =
-                    "value" in line.content[0] ? line.content[0]?.value : "";
+                    Array.isArray(line.content) &&
+                    line.content[0] &&
+                    "value" in line.content[0]
+                      ? line.content[0]?.value
+                      : "";
                   count++;
                 }
               });
