@@ -156,7 +156,7 @@ export class RichText {
             | RichTextText
           )[];
           if (Array.isArray(innerContent)) {
-            let count = 1;
+            let count = 0;
             while (ret.length < chars && count < innerContent.length) {
               innerContent.forEach((line) => {
                 if (line.nodeType === "text") {
