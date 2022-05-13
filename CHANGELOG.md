@@ -2,6 +2,12 @@
 
 Notable changes to this project will be documented in this file.
 
+### [2.3.4] (2022-05-13)
+
+#### Bug Fixes
+
+- Properly traverses links within lists and assigns reference data.
+
 ### [2.2.8] (2022-03-08)
 
 #### Bug Fixes

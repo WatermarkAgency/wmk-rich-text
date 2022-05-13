@@ -95,7 +95,19 @@ export class RichText {
                         : [];
                     listCon.forEach(
                       (pCon: RichTextBlock | RichTextInline | RichTextText) => {
+                        const innerListCon =
+                          "content" in pCon ? pCon.content : undefined;
                         const nodeType = pCon.nodeType;
+                        if (innerListCon) {
+                          innerListCon.map((inCon: RichTextInline) => {
+                            const inNodeType = inCon.nodeType;
+                            if (inNodeType.match(/^entry|asset/)) {
+                              r = _refs[refCount];
+                              refCount++;
+                              inCon.reference = r;
+                            }
+                          });
+                        }
                         if (nodeType.match(/^entry|asset/)) {
                           r = _refs[refCount];
                           refCount++;
