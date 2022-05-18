@@ -22,10 +22,12 @@ const sampleQuery = graphql`
         references {
           __typename
           ... on ContentfulLink {
+            contentful_id
             title
             url
           }
           ... on ContentfulBlog {
+            contentful_id
             image {
               gatsbyImageData
               title
@@ -46,6 +48,8 @@ const sampleQuery = graphql`
 ```
 
 The _\_\_typename_ field is important. It helps identify what references data is being called during block processing.
+
+The _contentful\_id_ field is important, and is required to match references within Rich Text raw data.
 
 ### RichTextReact
 
