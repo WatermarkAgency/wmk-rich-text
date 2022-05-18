@@ -110,7 +110,11 @@ export class RichText {
           ...block,
           reference: {
             __typename: "error",
-            data: { error: "check query, make sure to add contentful_id" }
+            data: {
+              error: "check query, make sure to add contentful_id",
+              __typename: reference?.__typename,
+              contentful_id: reference?.contentful_id
+            }
           }
         };
   };

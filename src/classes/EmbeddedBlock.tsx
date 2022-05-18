@@ -18,7 +18,19 @@ export class EmbeddedBlock {
     const getCompFromHash = (
       type: string
     ): React.FunctionComponent<typeof props> => {
-      const RetComp = type in hash ? hash[type] : undefined;
+      const RetComp =
+        type === "error"
+          ? () => (
+              <>
+                {console.log(
+                  `problem with rich text reference query`,
+                  data.data
+                )}
+              </>
+            )
+          : type in hash
+          ? hash[type]
+          : undefined;
       if (!RetComp) {
         console.log(`No component ${type} defined in component hash table`);
       }

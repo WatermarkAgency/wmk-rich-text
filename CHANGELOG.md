@@ -2,12 +2,13 @@
 
 Notable changes to this project will be documented in this file.
 
-### [3.0.0] (2022-05-13)
+### [3.1.0] (2022-05-18)
 
 #### Bug Fixes / Feature 
 
 - Fixed ability to match multiple instances of the same reference within content
 - Requires addition of contentful_id to reference graphql query
+- Added error messaging log for bad reference queries
 
 ### [2.3.4] (2022-05-13)
 
