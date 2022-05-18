@@ -22,8 +22,6 @@ export interface RichTextEntryHyperlink extends EntryHyperlink {
   reference?: RichTextReference;
 }
 
-export type RichTextNode = RichTextBlock | RichTextInline;
-
 export interface RichTextNodeRenderer extends NodeRenderer {
   (
     node: RichTextBlock | RichTextInline | Block | Inline,
@@ -48,7 +46,11 @@ export const RichTextReact = ({
 }) => {
   if (content) {
     const json = content.richText();
-    return json ? <>{documentToReactComponents(json as RichTextDocument, options)}</> : <></>;
+    return json ? (
+      <>{documentToReactComponents(json as RichTextDocument, options)}</>
+    ) : (
+      <></>
+    );
   } else {
     return <></>;
   }

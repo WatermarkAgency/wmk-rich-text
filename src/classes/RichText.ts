@@ -42,8 +42,6 @@ export interface RichTextText extends Text {
   reference?: RichTextReference;
 }
 
-export type RichTextNode = RichTextText | RichTextBlock | RichTextInline;
-
 export interface RichtTextNodeData {
   target: {
     sys: {
@@ -53,6 +51,8 @@ export interface RichtTextNodeData {
     };
   };
 }
+
+export type RichTextNode = RichTextText | RichTextBlock | RichTextInline;
 
 enum BLOCKTYPE {
   EMBEDDED = "embedded",
