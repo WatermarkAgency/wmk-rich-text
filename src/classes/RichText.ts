@@ -7,12 +7,13 @@ import {
 } from "@contentful/rich-text-types";
 
 export interface RichTextReferenceQuery {
-  __typename?: string;
+  __typename: string;
+  contentful_id: string;
   [key: string]: any;
 }
 
 export interface RichTextReference {
-  __typename?: string;
+  __typename: string;
   data: { [key: string]: any };
 }
 
@@ -30,17 +31,40 @@ export interface RichTextQuery {
 }
 
 export interface RichTextBlock extends Block {
-  reference?: RichTextReferenceQuery;
+  reference?: RichTextReference;
 }
 
 export interface RichTextInline extends Inline {
-  reference?: RichTextReferenceQuery;
+  reference?: RichTextReference;
 }
 
 export interface RichTextText extends Text {
-  reference?: RichTextReferenceQuery;
+  reference?: RichTextReference;
 }
 
+export type RichTextNode = RichTextText | RichTextBlock | RichTextInline;
+
+export interface RichtTextNodeData {
+  target: {
+    sys: {
+      id: string;
+      linkType: string;
+      type: string;
+    };
+  };
+}
+
+enum BLOCKTYPE {
+  EMBEDDED = "embedded",
+  PARAGRAPH = "paragraph",
+  HEADING = "heading",
+  ENTRY = "entry",
+  ASSET = "asset",
+  HORIZONTAL_RULE = "hr",
+  LIST = "list",
+  TEXT = "text",
+  INLINE = "inline"
+}
 /**
  * @class - Reshapes Contentful RichText data into
  * usable JSON for rendering. Also keeps track of
@@ -52,109 +76,76 @@ export class RichText {
    *
    */
   raw?: string;
-  json?: RichTextDocument;
-  references: any[];
-
+  private json?: Document;
+  references: { [key: string]: RichTextReferenceQuery };
   constructor(node: RichTextQuery) {
-    const _refs: RichTextReferenceQuery[] = node?.references
-      ? node.references
-      : [];
+    const _refs = node?.references ? node.references : [];
     const raw = node?.raw;
     const json: Document = raw ? JSON.parse(raw) : undefined;
-    let refCount = 0;
+    const refHash: { [key: string]: RichTextReferenceQuery } = {};
     this.raw = raw;
-    this.json =
-      json && Array.isArray(json.content)
-        ? {
-            ...json,
-            content: json.content.map((j) => {
-              const { nodeType } = j;
-              let r = null;
-              switch (true) {
-                case Array.isArray(nodeType.match(/^embedded/)):
-                  r = _refs[refCount];
-                  refCount++;
-                  break;
-                case Array.isArray(nodeType.match(/paragraph|heading/)):
-                  j.content.forEach(
-                    (pCon: RichTextBlock | RichTextInline | RichTextText) => {
-                      const nodeType = pCon.nodeType;
-                      if (nodeType.match(/^entry|asset/)) {
-                        r = _refs[refCount];
-                        refCount++;
-                        pCon.reference = r;
-                      }
-                    }
-                  );
-                  break;
-                case Array.isArray(nodeType.match(/list/)):
-                  j.content.forEach((lCon: Block | Inline | Text) => {
-                    const listCon =
-                      "content" in lCon && Array.isArray(lCon.content)
-                        ? lCon.content
-                        : [];
-                    listCon.forEach(
-                      (pCon: RichTextBlock | RichTextInline | RichTextText) => {
-                        const innerListCon =
-                          "content" in pCon ? pCon.content : undefined;
-                        const nodeType = pCon.nodeType;
-                        if (innerListCon) {
-                          innerListCon.map((inCon: RichTextInline) => {
-                            const inNodeType = inCon.nodeType;
-                            if (inNodeType.match(/^entry|asset/)) {
-                              r = _refs[refCount];
-                              refCount++;
-                              inCon.reference = r;
-                            }
-                          });
-                        }
-                        if (nodeType.match(/^entry|asset/)) {
-                          r = _refs[refCount];
-                          refCount++;
-                          pCon.reference = r;
-                        }
-                      }
-                    );
-                  });
-                  break;
-                case Array.isArray(nodeType.match(/quote/)):
-                  j.content.forEach((bCon: Block | Inline | Text) => {
-                    const blockQuote =
-                      "content" in bCon && Array.isArray(bCon.content)
-                        ? bCon.content
-                        : [];
-                    blockQuote.forEach(
-                      (pCon: RichTextBlock | RichTextInline | RichTextText) => {
-                        const nodeType = pCon.nodeType;
-                        if (nodeType.match(/^entry|asset/)) {
-                          r = _refs[refCount];
-                          refCount++;
-                          pCon.reference = r;
-                        }
-                      }
-                    );
-                  });
-                  break;
-                case Array.isArray(nodeType.match(/hr/)):
-                  break;
-                default:
-                  console.log(
-                    "The node: " +
-                      nodeType +
-                      " is not yet supported in the RichText class."
-                  );
-              }
-              const __typename = r?.__typename;
-              const retCopy = { ...r };
-              if (retCopy && "__typename" in retCopy) {
-                delete retCopy["__typename"];
-              }
-              return { ...j, reference: { __typename, data: { ...retCopy } } };
-            })
-          }
-        : undefined;
-    this.references = _refs;
+    this.references = _refs.reduce((hash, ref) => {
+      hash[ref.contentful_id] = ref;
+      return hash;
+    }, refHash);
+    this.json = json;
   }
+  private getRef = (id: string) => {
+    return id in this.references ? this.references[id] : undefined;
+  };
+  private handleRef = (
+    block: Block | Inline
+  ): RichTextBlock | RichTextInline => {
+    const data = block.data as RichtTextNodeData;
+    const reference = { ...this.getRef(data.target.sys.id) };
+    return reference?.__typename
+      ? {
+          ...block,
+          reference: {
+            __typename: reference.__typename,
+            data: { ...reference }
+          }
+        }
+      : {
+          ...block,
+          reference: {
+            __typename: "error",
+            data: { error: "check query, make sure to add contentful_id" }
+          }
+        };
+  };
+  private hasRef = (block: Block | Inline | Text) => {
+    return Array.isArray(
+      block.nodeType.match(
+        new RegExp(
+          `${BLOCKTYPE.EMBEDDED}|${BLOCKTYPE.ENTRY}|${BLOCKTYPE.ASSET}`
+        )
+      )
+    );
+  };
+  private traverseBlocks = (
+    content: (Block | Inline | Text)[]
+  ): (RichTextBlock | RichTextInline | RichTextText)[] => {
+    return content.map((block) => {
+      return this.hasRef(block)
+        ? this.handleRef(block as Block | Inline)
+        : "content" in block
+        ? ({
+            ...block,
+            content: this.traverseBlocks(block.content)
+          } as RichTextBlock | RichTextInline)
+        : block;
+    });
+  };
+  richText = () => {
+    const ret =
+      this.json && Array.isArray(this.json.content)
+        ? { ...this.json, content: this.traverseBlocks([...this.json.content]) }
+        : undefined;
+    console.log(ret);
+    return ret;
+  };
+
   excerpt = (chars: number = 156): string => {
     const content = this.json?.content;
     let ret = ``;
@@ -162,11 +153,7 @@ export class RichText {
       content.forEach((text) => {
         const type = text.nodeType;
         if (type === "paragraph") {
-          const innerContent = text.content as (
-            | RichTextBlock
-            | RichTextInline
-            | RichTextText
-          )[];
+          const innerContent = text.content as RichTextNode[];
           if (Array.isArray(innerContent)) {
             let count = 0;
             while (ret.length < chars && count < innerContent.length) {
