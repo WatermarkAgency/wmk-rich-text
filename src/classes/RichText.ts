@@ -77,7 +77,7 @@ export class RichText {
    */
   raw?: string;
   private json?: Document;
-  references: { [key: string]: RichTextReferenceQuery };
+  private references: { [key: string]: RichTextReferenceQuery };
   constructor(node: RichTextQuery) {
     const _refs = node?.references ? node.references : [];
     const raw = node?.raw;
@@ -142,7 +142,6 @@ export class RichText {
       this.json && Array.isArray(this.json.content)
         ? { ...this.json, content: this.traverseBlocks([...this.json.content]) }
         : undefined;
-    console.log(ret);
     return ret;
   };
 
