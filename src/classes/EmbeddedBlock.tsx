@@ -14,6 +14,7 @@ export class EmbeddedBlock {
   constructor(node: RichTextNode, hash: ComponentHashTable) {
     const data = node?.reference;
     const type = data?.__typename;
+    const contentful_id = data?.data?.contentful_id;
     const props = data?.data;
     const getCompFromHash = (
       type: string
@@ -32,7 +33,22 @@ export class EmbeddedBlock {
           ? hash[type]
           : undefined;
       if (!RetComp) {
-        console.log(`No component ${type} defined in component hash table`);
+        if (!contentful_id) {
+          console.log(
+            `contentful_id is missing on reference data for ${type} / ${data?.data?.__typename}
+            }`
+          );
+        } else {
+          if (type === "error") {
+            console.log(
+              `Error retrieving reference data for ${type} / ${contentful_id}`
+            );
+          } else {
+            console.log(
+              `No ${type} component defined in hash for contentful_id: ${contentful_id}.`
+            );
+          }
+        }
       }
       return RetComp ? RetComp : NullComponent;
     };
