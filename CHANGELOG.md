@@ -2,6 +2,13 @@
 
 Notable changes to this project will be documented in this file.
 
+### [3.1.2] (2022-05-18)
+
+#### Bug Fixes
+
+- References no longer private and retains array structure
+- Reference hash moved to private property within RichText class
+
 ### [3.1.0] (2022-05-18)
 
 #### Bug Fixes / Feature 

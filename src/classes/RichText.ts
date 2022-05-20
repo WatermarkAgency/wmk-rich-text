@@ -77,27 +77,30 @@ export class RichText {
    */
   raw?: string;
   private json?: Document;
-  private references: { [key: string]: RichTextReferenceQuery };
+  references: RichTextReferenceQuery[];
+  private hash: { [key: string]: RichTextReferenceQuery };
   constructor(node: RichTextQuery) {
     const _refs = node?.references ? node.references : [];
     const raw = node?.raw;
     const json: Document = raw ? JSON.parse(raw) : undefined;
     const refHash: { [key: string]: RichTextReferenceQuery } = {};
     this.raw = raw;
-    this.references = _refs.reduce((hash, ref) => {
+    this.references = _refs;
+    this.hash = _refs.reduce((hash, ref) => {
       hash[ref.contentful_id] = ref;
       return hash;
     }, refHash);
     this.json = json;
   }
   private getRef = (id: string) => {
-    return id in this.references ? this.references[id] : undefined;
+    return id in this.hash ? this.hash[id] : undefined;
   };
   private handleRef = (
     block: Block | Inline
   ): RichTextBlock | RichTextInline => {
     const data = block.data as RichtTextNodeData;
-    const reference = { ...this.getRef(data.target.sys.id) };
+    const contentful_id = data?.target?.sys?.id;
+    const reference = { ...this.getRef(contentful_id) };
     return reference?.__typename
       ? {
           ...block,
@@ -112,8 +115,7 @@ export class RichText {
             __typename: "error",
             data: {
               error: "check query, make sure to add contentful_id",
-              __typename: reference?.__typename,
-              contentful_id: reference?.contentful_id
+              block
             }
           }
         };
