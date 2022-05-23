@@ -51,6 +51,8 @@ The _\_\_typename_ field is important. It helps identify what references data is
 
 The _contentful\_id_ field is important, and is required to match references within Rich Text raw data.
 
+Failure to include those queried fields will result in error messages.
+
 ### RichTextReact
 
 ```jsx
@@ -73,6 +75,7 @@ Intended to be used within richTextOptions on the [BLOCKS.EMBEDDED_ENTRY] key, t
 Node will be of type RichTextNode, which is an extension of Contentful's rich text types but also includes reference data. NOTE: since there is only one reference per block, the property name has been changed to reflect that: *reference* instead of references.
 
 Pass the queried node along with a Component hash object. The hash object must have keys that correspond to each block's _\_\_typename_.
+
 
 #### Example Component Hash Object
 

@@ -2,6 +2,12 @@
 
 Notable changes to this project will be documented in this file.
 
+### [3.1.2] (2022-05-20)
+
+#### Bug Fixes
+
+- Extend error messaging
+
 ### [3.1.2] (2022-05-18)
 
 #### Bug Fixes

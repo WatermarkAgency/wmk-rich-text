@@ -115,7 +115,7 @@ export class RichText {
             __typename: "error",
             data: {
               error: "check query, make sure to add contentful_id",
-              block
+              contentful_id
             }
           }
         };
