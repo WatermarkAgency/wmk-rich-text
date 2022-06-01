@@ -30,10 +30,6 @@ export interface RichTextNodeRenderer extends NodeRenderer {
   ): React.ReactNode;
 }
 
-export interface RichTextRenderMark {
-  [k: string]: RichTextMarkRender
-}
-
 export interface RichTextRenderNode {
   [k: string]: RichTextNodeRenderer;
 }
