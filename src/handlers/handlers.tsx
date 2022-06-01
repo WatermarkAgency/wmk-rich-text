@@ -40,13 +40,13 @@ const ListElements: {
 };
 
 const TypographyElements: {
-  [key: string]: React.FunctionComponent<{ children: RichTextChildren }>;
+  [key: string]: React.FunctionComponent<{ children: React.ReactNode }>;
 } = {
   paragraph: ({
     children,
     style
   }: {
-    children: RichTextChildren;
+    children: React.ReactNode;
     style?: React.CSSProperties;
   }) => (
     <div className="p" style={style}>
@@ -57,42 +57,42 @@ const TypographyElements: {
     children,
     style
   }: {
-    children: RichTextChildren;
+    children: React.ReactNode;
     style?: React.CSSProperties;
   }) => <h1 style={style}>{handleRichTextChildren(children)}</h1>,
   "heading-2": ({
     children,
     style
   }: {
-    children: RichTextChildren;
+    children: React.ReactNode;
     style?: React.CSSProperties;
   }) => <h2 style={style}>{handleRichTextChildren(children)}</h2>,
   "heading-3": ({
     children,
     style
   }: {
-    children: RichTextChildren;
+    children: React.ReactNode;
     style?: React.CSSProperties;
   }) => <h3 style={style}>{handleRichTextChildren(children)}</h3>,
   "heading-4": ({
     children,
     style
   }: {
-    children: RichTextChildren;
+    children: React.ReactNode;
     style?: React.CSSProperties;
   }) => <h4 style={style}>{handleRichTextChildren(children)}</h4>,
   "heading-5": ({
     children,
     style
   }: {
-    children: RichTextChildren;
+    children: React.ReactNode;
     style?: React.CSSProperties;
   }) => <h5 style={style}>{handleRichTextChildren(children)}</h5>,
   "heading-6": ({
     children,
     style
   }: {
-    children: RichTextChildren;
+    children: React.ReactNode;
     style?: React.CSSProperties;
   }) => <h6 style={style}>{handleRichTextChildren(children)}</h6>
 };
@@ -111,11 +111,11 @@ export type RichTextChild = string | JSX.Element;
 
 export const blocksTypography = (
   node: RichTextNode,
-  children: RichTextChildren,
+  children: React.ReactNode,
   config?: {
     Component?: React.FunctionComponent<{
       node: RichTextNode;
-      children: RichTextChildren;
+      children: React.ReactNode;
     }>;
     Wrapper?: React.FunctionComponent<{ children: React.ReactNode }>;
   }
@@ -123,7 +123,7 @@ export const blocksTypography = (
   const TypeElement =
     node.nodeType in TypographyElements
       ? TypographyElements[node.nodeType]
-      : ({ children }: { children: RichTextChildren }) => (
+      : ({ children }: { children: React.ReactNode }) => (
           <>{handleRichTextChildren(children)}</>
         );
   return config?.Component ? (
@@ -171,7 +171,7 @@ export const blocksEmbeddedEntry = (
 
 export const blocksList = (
   node: RichTextBlock,
-  children: RichTextChildren,
+  children: React.ReactNode,
   config?: {
     Bullet?: JSX.Element;
     rowStyle?: React.CSSProperties;
@@ -183,7 +183,7 @@ export const blocksList = (
     node.nodeType in ListElements
       ? ListElements[node.nodeType]
       : ({ children }: { children: React.ReactNode }) => <>{children}</>;
-  return config?.Bullet && Array.isArray(node.content) ? (
+  return config?.Bullet && Array.isArray(node.content) && Array.isArray(children) ? (
     <Container>
       <ListEl style={config?.Bullet ? { listStyleType: "none" } : undefined}>
         {node.content.map((n, i) => {
@@ -237,10 +237,10 @@ export const blocksEmbeddedAsset = (
 
 export const inlinesHyperlink = (
   node: RichTextNode,
-  children: RichTextChildren,
+  children: React.ReactNode,
   Component?: React.FunctionComponent<{
     node: RichTextNode;
-    children: RichTextChildren;
+    children: React.ReactNode;
   }>
 ) => {
   return Component ? (
@@ -254,10 +254,10 @@ export const inlinesHyperlink = (
 
 export const inlinesAssetHyperlink = (
   node: RichTextNode,
-  children: RichTextChildren,
+  children: React.ReactNode,
   Component?: React.FunctionComponent<{
     asset: ContentfulAssetQuery;
-    textNode: RichTextChildren;
+    textNode: React.ReactNode;
   }>
 ) => {
   const asset = node?.reference?.data as ContentfulAssetQuery;
@@ -273,7 +273,7 @@ const DefaultAssetLink = ({
   textNode
 }: {
   asset: ContentfulAssetQuery;
-  textNode: RichTextChildren;
+  textNode: React.ReactNode;
 }) => {
   return (
     <WmkLink to={asset?.file?.url} target="_blank">
@@ -282,7 +282,7 @@ const DefaultAssetLink = ({
   );
 };
 
-export const handleRichTextChildren = (children: RichTextChildren) => {
+export const handleRichTextChildren = (children: React.ReactNode) => {
   return (
     <>
       {Array.isArray(children)
@@ -302,10 +302,10 @@ export const handleRichTextChildren = (children: RichTextChildren) => {
 
 export const inlinesEmbeddedEntry = (
   node: RichTextNode,
-  children: RichTextChildren,
+  children: React.ReactNode,
   Component?: React.FunctionComponent<{
     node: RichTextNode;
-    children: RichTextChildren;
+    children: React.ReactNode;
   }>
 ) => {
   return Component ? (
@@ -317,7 +317,7 @@ export const inlinesEmbeddedEntry = (
 
 export const inlinesEntryHyperlink = (
   node: RichTextNode,
-  children: RichTextChildren,
+  children: React.ReactNode,
   getTo?: (reference: RichTextReference) => string
 ) => {
   const noTo = () => {

@@ -2,13 +2,14 @@
 
 Notable changes to this project will be documented in this file.
 
-### [4.0.0] (2022-06-01)
+### [4.0.3] (2022-06-01)
 
 #### Features
 
 - New Built-in handlers for rich text options
 - getRichTextOptions injects all new WMK defaults
 - Options no longer required for RichTextReact
+- Updated renderNode function interface
 
 ### [3.1.2] (2022-05-20)
 

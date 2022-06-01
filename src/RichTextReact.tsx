@@ -23,11 +23,19 @@ export interface RichTextEntryHyperlink extends EntryHyperlink {
   reference?: RichTextReference;
 }
 
+export interface RichTextEmbedRenderer {
+  (node: RichTextBlock | RichTextInline | Block | Inline): React.ReactNode;
+}
+
 export interface RichTextNodeRenderer extends NodeRenderer {
   (
     node: RichTextBlock | RichTextInline | Block | Inline,
-    children: React.ReactNode
+    children?: React.ReactNode
   ): React.ReactNode;
+}
+
+export interface RichTextRenderEmbed {
+  [k: string]: RichTextEmbedRenderer;
 }
 
 export interface RichTextRenderNode {
