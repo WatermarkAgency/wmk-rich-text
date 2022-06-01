@@ -13,6 +13,7 @@ import * as React from "react";
 import { RichText, RichTextDocument } from ".";
 import { RichTextReference } from ".";
 import { RichTextBlock, RichTextInline } from "./classes/RichText";
+import { getRichTextOptions } from "./options/richTextOptions";
 
 export interface RichTextAssetHyperlink extends AssetHyperlink {
   reference?: RichTextReference;
@@ -42,12 +43,17 @@ export const RichTextReact = ({
   options
 }: {
   content?: RichText;
-  options: RichTextOptions;
+  options?: RichTextOptions;
 }) => {
   if (content) {
     const json = content.richText();
     return json ? (
-      <>{documentToReactComponents(json as RichTextDocument, options)}</>
+      <>
+        {documentToReactComponents(
+          json as RichTextDocument,
+          options || getRichTextOptions()
+        )}
+      </>
     ) : (
       <></>
     );
