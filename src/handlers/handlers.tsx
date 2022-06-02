@@ -97,7 +97,7 @@ const TypographyElements: {
   }) => <h6 style={style}>{handleRichTextChildren(children)}</h6>
 };
 
-export const NullComp = ({ children }: { children: React.ReactNode }) => (
+export const NullComp = ({ children }: { children?: React.ReactNode }) => (
   <>{children}</>
 );
 
@@ -151,6 +151,7 @@ export const blocksTypography = (
 
 export const blocksEmbeddedEntry = (
   node: RichTextNode,
+  children?: [],
   blockHash?: BlockHash
 ) => {
   const entry = new EmbeddedBlock(
@@ -160,8 +161,11 @@ export const blocksEmbeddedEntry = (
       : {
           Error: () => (
             <code>
+              {children}
               Use: (node: RichTextNode) =&gt blocksEmbeddedEntry(node,
               blockHash), pass blockHash object.
+              {console.log(`   Use: (node: RichTextNode) => blocksEmbeddedEntry(node,
+              blockHash), pass blockHash object.`)}
             </code>
           )
         }
@@ -182,8 +186,10 @@ export const blocksList = (
   const ListEl =
     node.nodeType in ListElements
       ? ListElements[node.nodeType]
-      : ({ children }: { children: React.ReactNode }) => <>{children}</>;
-  return config?.Bullet && Array.isArray(node.content) && Array.isArray(children) ? (
+      : NullComp
+  return config?.Bullet &&
+    Array.isArray(node.content) &&
+    Array.isArray(children) ? (
     <Container>
       <ListEl style={config?.Bullet ? { listStyleType: "none" } : undefined}>
         {node.content.map((n, i) => {
@@ -215,6 +221,7 @@ export const blocksList = (
 
 export const blocksEmbeddedAsset = (
   node: RichTextNode,
+  children: [],
   Component?: React.FunctionComponent<{
     asset: ContentfulImageQuery;
     contentType: string;
@@ -230,6 +237,7 @@ export const blocksEmbeddedAsset = (
     <ReactPlayer url={asset.file.url} />
   ) : (
     <NullComp>
+      {children}
       <>{console.log(`error with type: ${type}`)}</>
     </NullComp>
   );

@@ -8,7 +8,8 @@ import {
   inlinesHyperlink,
   inlinesAssetHyperlink,
   inlinesEmbeddedEntry,
-  inlinesEntryHyperlink
+  inlinesEntryHyperlink,
+  blocksEmbeddedAsset
 } from "../handlers/handlers";
 import { RichTextNode } from "../classes/RichText";
 import { RichTextRenderNode } from "..";
@@ -43,6 +44,9 @@ export const getRichTextOptions = (options?: {
     [BLOCKS.HEADING_6]:
       options?.renderNode[BLOCKS.HEADING_6] ||
       defaultNodeRenderers[BLOCKS.HEADING_6],
+    [BLOCKS.EMBEDDED_ASSET]:
+      options?.renderNode[BLOCKS.EMBEDDED_ASSET] ||
+      defaultNodeRenderers[BLOCKS.EMBEDDED_ASSET],
     [BLOCKS.EMBEDDED_ENTRY]:
       options?.renderNode[BLOCKS.EMBEDDED_ENTRY] ||
       defaultNodeRenderers[BLOCKS.EMBEDDED_ENTRY],
@@ -65,6 +69,7 @@ export const getRichTextOptions = (options?: {
     [INLINES.EMBEDDED_ENTRY]:
       options?.renderNode[INLINES.EMBEDDED_ENTRY] ||
       defaultNodeRenderers[INLINES.EMBEDDED_ENTRY],
+
     [INLINES.ENTRY_HYPERLINK]:
       options?.renderNode[INLINES.ENTRY_HYPERLINK] ||
       defaultNodeRenderers[INLINES.ENTRY_HYPERLINK],
@@ -89,6 +94,7 @@ const defaultNodeRenderers: RichTextRenderNode = {
   [BLOCKS.HEADING_4]: blocksTypography,
   [BLOCKS.HEADING_5]: blocksTypography,
   [BLOCKS.HEADING_6]: blocksTypography,
+  [BLOCKS.EMBEDDED_ASSET]: blocksEmbeddedAsset,
   [BLOCKS.EMBEDDED_ENTRY]: (node: RichTextNode) => blocksEmbeddedEntry(node),
   [BLOCKS.UL_LIST]: blocksList,
   [BLOCKS.OL_LIST]: blocksList,
