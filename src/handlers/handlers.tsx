@@ -50,7 +50,7 @@ const TypographyElements: {
     style?: React.CSSProperties;
   }) => (
     <div className="p" style={style}>
-      {handleRichTextChildren(children)}
+      {children}
     </div>
   ),
   "heading-1": ({
@@ -59,42 +59,42 @@ const TypographyElements: {
   }: {
     children: React.ReactNode;
     style?: React.CSSProperties;
-  }) => <h1 style={style}>{handleRichTextChildren(children)}</h1>,
+  }) => <h1 style={style}>{children}</h1>,
   "heading-2": ({
     children,
     style
   }: {
     children: React.ReactNode;
     style?: React.CSSProperties;
-  }) => <h2 style={style}>{handleRichTextChildren(children)}</h2>,
+  }) => <h2 style={style}>{children}</h2>,
   "heading-3": ({
     children,
     style
   }: {
     children: React.ReactNode;
     style?: React.CSSProperties;
-  }) => <h3 style={style}>{handleRichTextChildren(children)}</h3>,
+  }) => <h3 style={style}>{children}</h3>,
   "heading-4": ({
     children,
     style
   }: {
     children: React.ReactNode;
     style?: React.CSSProperties;
-  }) => <h4 style={style}>{handleRichTextChildren(children)}</h4>,
+  }) => <h4 style={style}>{children}</h4>,
   "heading-5": ({
     children,
     style
   }: {
     children: React.ReactNode;
     style?: React.CSSProperties;
-  }) => <h5 style={style}>{handleRichTextChildren(children)}</h5>,
+  }) => <h5 style={style}>{children}</h5>,
   "heading-6": ({
     children,
     style
   }: {
     children: React.ReactNode;
     style?: React.CSSProperties;
-  }) => <h6 style={style}>{handleRichTextChildren(children)}</h6>
+  }) => <h6 style={style}>{children}</h6>
 };
 
 export const NullComp = ({ children }: { children?: React.ReactNode }) => (
@@ -102,7 +102,7 @@ export const NullComp = ({ children }: { children?: React.ReactNode }) => (
 );
 
 export interface BlockHash {
-  [key: string]: (props: { [key: string]: any }) => JSX.Element;
+  [key: string]: (props: any) => JSX.Element;
 }
 
 export type RichTextChildren = (string | JSX.Element)[];
@@ -114,7 +114,7 @@ export const blocksTypography = (
   children: React.ReactNode,
   config?: {
     Component?: React.FunctionComponent<{
-      node: RichTextNode;
+      node?: RichTextNode;
       children: React.ReactNode;
     }>;
     Wrapper?: React.FunctionComponent<{ children: React.ReactNode }>;
@@ -123,29 +123,21 @@ export const blocksTypography = (
   const TypeElement =
     node.nodeType in TypographyElements
       ? TypographyElements[node.nodeType]
-      : ({ children }: { children: React.ReactNode }) => (
-          <>{handleRichTextChildren(children)}</>
-        );
+      : ({ children }: { children: React.ReactNode }) => <>{children}</>;
   return config?.Component ? (
     config?.Wrapper ? (
       <config.Wrapper>
-        <config.Component node={node} children={children}></config.Component>
+        <config.Component node={node}>{children}</config.Component>
       </config.Wrapper>
     ) : (
-      <config.Component node={node} children={children} />
+      <config.Component node={node}>{children}</config.Component>
     )
   ) : config?.Wrapper ? (
     <config.Wrapper>
-      <TypeElement>
-        <></>
-        {handleRichTextChildren(children)}
-      </TypeElement>
+      <TypeElement>{children}</TypeElement>
     </config.Wrapper>
   ) : (
-    <TypeElement>
-      <></>
-      {handleRichTextChildren(children)}
-    </TypeElement>
+    <TypeElement>{children}</TypeElement>
   );
 };
 
@@ -184,9 +176,7 @@ export const blocksList = (
   }
 ) => {
   const ListEl =
-    node.nodeType in ListElements
-      ? ListElements[node.nodeType]
-      : NullComp
+    node.nodeType in ListElements ? ListElements[node.nodeType] : NullComp;
   return config?.Bullet &&
     Array.isArray(node.content) &&
     Array.isArray(children) ? (
@@ -326,7 +316,7 @@ export const inlinesEmbeddedEntry = (
 export const inlinesEntryHyperlink = (
   node: RichTextNode,
   children: React.ReactNode,
-  getTo?: (reference: RichTextReference) => string
+  getTo?: (reference?: RichTextReference) => string
 ) => {
   const noTo = () => {
     console.log("no getTo function for node:", node);
