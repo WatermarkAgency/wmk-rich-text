@@ -218,7 +218,7 @@ export const blocksEmbeddedAsset = (
   }>
 ) => {
   const asset = node?.reference?.data as ContentfulImageQuery;
-  const type = asset?.file?.contentType;
+  const type = asset?.file?.contentType || "";
   return Component ? (
     <Component asset={asset} contentType={type} />
   ) : type.match("image") ? (
