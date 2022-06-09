@@ -76,7 +76,7 @@ export class RichText {
    *
    */
   raw?: string;
-  private json?: Document;
+  json?: Document;
   references: RichTextReferenceQuery[];
   private hash: { [key: string]: RichTextReferenceQuery };
   constructor(node: RichTextQuery) {
@@ -96,17 +96,18 @@ export class RichText {
     return id in this.hash ? this.hash[id] : undefined;
   };
   private handleRef = (
-    block: Block | Inline
+    block: Block | Inline | RichTextBlock | RichTextInline
   ): RichTextBlock | RichTextInline => {
     const data = block.data as RichtTextNodeData;
     const contentful_id = data?.target?.sys?.id;
     const reference = { ...this.getRef(contentful_id) };
+    const existingRef = "reference" in block ? block.reference.data : undefined;
     return reference?.__typename
       ? {
           ...block,
           reference: {
             __typename: reference.__typename,
-            data: { ...reference }
+            data: { ...reference, ...existingRef }
           }
         }
       : {

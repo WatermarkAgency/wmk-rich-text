@@ -2,6 +2,13 @@
 
 Notable changes to this project will be documented in this file.
 
+### [4.0.8] (2022-06-09)
+
+#### Features
+
+- Accessing json property no longer private
+- Generated rich text will honor any injecte references on json object
+
 ### [4.0.3] (2022-06-01)
 
 #### Features
