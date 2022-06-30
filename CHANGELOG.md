@@ -2,6 +2,13 @@
 
 Notable changes to this project will be documented in this file.
 
+### [4.0.10] (2022-06-30)
+
+#### Update
+
+- Bump wmk-link peer dependency to 1.2.4
+- Bump wmk-image peer dependency to 1.3.0
+
 ### [4.0.9] (2022-06-09)
 
 #### Features
